@@ -1,40 +1,39 @@
-# oshie_store_environment 0.2.0
+# Oshie Store Environment 0.2.1 — local candidate
 
-A Flutter iOS plugin returning `production`, `sandbox`, or `unknown` for Oshie.
-This is a routing hint, never purchase, membership, or credit authority.
-No backend URLs, API keys, credentials, account data, purchase/restore operations,
-or receipt contents are included or returned.
+`OshieStoreEnvironmentReader.current()` is the non-interactive API for startup
+and automatic foreground checks. It never invokes AppTransaction.refresh.
+Its existing Dart eight-second timeout is unchanged (it does not cancel StoreKit).
 
-## Requirements
-Flutter / Dart >=3.4.0 <4.0.0; iOS >=13.0; Swift 5. AppTransaction is guarded
-at iOS 16.0. Bundle identity check is `jp.tipies.oshie`.
-Verified AppTransaction environment and an existing receipt-location signal are
-cross-checked. Conflicts, simulator, verified Xcode/unsupported environments,
-unavailable signals, missing plugin, platform failure or an 8-second timeout
-return unknown. Missing receipt/auth/network never implies production.
-No receipt refresh, AppTransaction refresh, purchase, restore, or sign-in is invoked.
+`OshieStoreEnvironmentReader.refreshFromUserAction()` is only for a direct,
+explicit user action. AppTransaction.refresh can display App Store authentication
+UI and contact Apple. Do not call it from startup, timers, lifecycle or automatic
+retry. Disable the initiating button while awaiting completion/cancellation.
+There is no interactive timeout; concurrent Dart calls share one Future and
+native overlapping interactive requests are rejected as unknown.
 
-```dart
-final hint = await OshieStoreEnvironmentReader.current();
-```
+Both return only production, sandbox, unknown. On physical iOS 16+, shared is
+checked once; only the explicit-user path may refresh once after shared throws
+or is unverified. Verified bundle mismatch/unsupported environment is terminal
+unknown. Receipt filename/existence is secondary evidence; conflict is unknown.
+Simulator/non-iOS stays unknown. Older iOS retains receipt-only fallback.
+No purchase, restore, AppStore.sync, receipt-refresh request, backend operations,
+transaction payloads or identifiers are exposed. No logging is added.
 
-The caller must keep unknown in a local-only shell. Never initialize a default
-production backend. Choose only a baked manifest after resolution; no hot switch.
+App integration is NOT implemented in this candidate. Oshie must keep backend
+initialization at cold startup: a successful interactive hint should request a
+user relaunch, not initialize/switch a backend in the running safe shell. A fresh
+process must re-read passive evidence; do not persist or force the refreshed hint.
+Only the existing safe-shell retry button may be wired in a separately approved
+app integration gate. This library cannot authenticate the provenance of a tap.
 
-## Git consumption (fill only after approved publication)
-```yaml
-oshie_store_environment:
-  git:
-    url: <future-public-repo>
-    ref: <full-40-character-commit-sha>
-```
-Do not use branches or tag-only references. This candidate has no published Git SHA.
-The review package records its tree SHA256 separately. Use repository root as the
-package root; no enclosing workspace, client package, evidence or test data.
+Not published, tagged or pushed. Tests mock StoreKit; native app not built.
 
-## Validation
-`flutter test test/environment_channel_test.dart` tests channel behavior without
-StoreKit. `ios/Tests/environment_tests.swift` plus `EnvironmentDecision.swift`
-can be compiled as a standalone macOS Swift test executable. Plugin sources are
-also iOS SDK typechecked by the enclosing review package. These are not a signed
-IPA or TestFlight proof. License is proprietary; publishing is a separate approval.
+Requirements: Dart >=3.4.0 <4.0.0, iOS >=13.0, Swift5; StoreKit AppTransaction
+is guarded at iOS16. This is routing evidence, never purchase/membership/credit
+authority. Callers must keep unknown in a local-only shell and never select a
+default production backend.
+
+After separately approved publication, consume the repository root with a full
+40-character Git revision, not a branch or tag-only reference. This local
+candidate has no published Git SHA. License remains proprietary. Unit tests and
+iOS SDK typechecking do not establish signed-app or TestFlight runtime behavior.
