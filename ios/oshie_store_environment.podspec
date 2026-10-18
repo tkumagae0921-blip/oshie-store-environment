@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'oshie_store_environment'
-  s.version = '0.2.1'
+  s.version = '0.2.2'
   s.summary = 'Oshie read-only iOS environment routing hint.'
   s.description = 'Environment evidence only. Explicit-user refresh may authenticate with the App Store; no purchase, restore or grant operations.'
   s.homepage = 'https://tipies.jp'

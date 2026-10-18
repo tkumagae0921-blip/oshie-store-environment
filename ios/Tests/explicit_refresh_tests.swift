@@ -46,36 +46,64 @@ actor SuspendedRefresh {
         func v(_ environment: String, _ matches: Bool = true) -> AppTransactionEvidence {
             .verified(environment: environment, bundleMatches: matches)
         }
-        let cases: [Scenario] = [
-            Scenario(name: "current_shared_sandbox", interactive: false, shared: v("sandbox"), refresh: v("production"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 1),
-            Scenario(name: "current_shared_production", interactive: false, shared: v("production"), refresh: v("sandbox"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 1),
+        var cases: [Scenario] = [
+            Scenario(name: "current_shared_sandbox", interactive: false, shared: v("sandbox"), refresh: v("production"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 0),
+            Scenario(name: "current_shared_production", interactive: false, shared: v("production"), refresh: v("sandbox"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 0),
             Scenario(name: "current_bundle_mismatch_receipt_blocked", interactive: false, shared: v("sandbox", false), refresh: v("sandbox"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 0),
             Scenario(name: "current_unavailable_sandbox_receipt", interactive: false, shared: .unavailable, refresh: v("production"), receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 1),
             Scenario(name: "current_unavailable_production_receipt", interactive: false, shared: .unavailable, refresh: v("sandbox"), receipt: "receipt", expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 1),
             Scenario(name: "current_unavailable_no_receipt", interactive: false, shared: .unavailable, refresh: v("production"), receipt: nil, expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 1),
             Scenario(name: "current_unverified_receipt", interactive: false, shared: .unverified, refresh: v("production"), receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 1),
             Scenario(name: "current_simulator", interactive: false, shared: v("production"), refresh: v("production"), receipt: "receipt", expected: "unknown", sharedCount: 0, refreshCount: 0, receiptCount: 0, simulator: true),
-            Scenario(name: "interactive_shared_sandbox", interactive: true, shared: v("sandbox"), refresh: v("production"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 1),
-            Scenario(name: "interactive_shared_production", interactive: true, shared: v("production"), refresh: v("sandbox"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 1),
+            Scenario(name: "interactive_shared_sandbox", interactive: true, shared: v("sandbox"), refresh: v("production"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 0),
+            Scenario(name: "interactive_shared_production", interactive: true, shared: v("production"), refresh: v("sandbox"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 0),
             Scenario(name: "interactive_shared_bundle_mismatch", interactive: true, shared: v("production", false), refresh: v("sandbox"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 0),
-            Scenario(name: "shared_unavailable_refresh_sandbox", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 1),
-            Scenario(name: "shared_unverified_refresh_sandbox", interactive: true, shared: .unverified, refresh: v("sandbox"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 1),
-            Scenario(name: "shared_unavailable_refresh_production", interactive: true, shared: .unavailable, refresh: v("production"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 1, receiptCount: 1),
+            Scenario(name: "shared_unavailable_refresh_sandbox", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 0),
+            Scenario(name: "shared_unverified_refresh_sandbox", interactive: true, shared: .unverified, refresh: v("sandbox"), receipt: nil, expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 0),
+            Scenario(name: "shared_unavailable_refresh_production", interactive: true, shared: .unavailable, refresh: v("production"), receipt: nil, expected: "production", sharedCount: 1, refreshCount: 1, receiptCount: 0),
             Scenario(name: "refresh_bundle_mismatch_receipt_blocked", interactive: true, shared: .unavailable, refresh: v("sandbox", false), receipt: "sandboxReceipt", expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 0),
             Scenario(name: "refresh_unverified_no_receipt", interactive: true, shared: .unavailable, refresh: .unverified, receipt: nil, expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 1),
             Scenario(name: "refresh_unavailable_no_receipt", interactive: true, shared: .unavailable, refresh: .unavailable, receipt: nil, expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 1),
             Scenario(name: "refresh_unavailable_sandbox_receipt", interactive: true, shared: .unavailable, refresh: .unavailable, receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 1),
             Scenario(name: "refresh_unavailable_production_receipt", interactive: true, shared: .unavailable, refresh: .unavailable, receipt: "receipt", expected: "production", sharedCount: 1, refreshCount: 1, receiptCount: 1),
-            Scenario(name: "shared_sandbox_conflict", interactive: true, shared: v("sandbox"), refresh: v("sandbox"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 1),
-            Scenario(name: "shared_production_conflict", interactive: true, shared: v("production"), refresh: v("production"), receipt: "sandboxReceipt", expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 1),
-            Scenario(name: "refresh_sandbox_conflict", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 1),
-            Scenario(name: "refresh_production_conflict", interactive: true, shared: .unavailable, refresh: v("production"), receipt: "sandboxReceipt", expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 1),
-            Scenario(name: "verified_agrees_receipt", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 1),
+            Scenario(name: "shared_sandbox_conflict", interactive: true, shared: v("sandbox"), refresh: v("sandbox"), receipt: "receipt", expected: "sandbox", sharedCount: 1, refreshCount: 0, receiptCount: 0),
+            Scenario(name: "shared_production_conflict", interactive: true, shared: v("production"), refresh: v("production"), receipt: "sandboxReceipt", expected: "production", sharedCount: 1, refreshCount: 0, receiptCount: 0),
+            Scenario(name: "refresh_sandbox_conflict", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: "receipt", expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 0),
+            Scenario(name: "refresh_production_conflict", interactive: true, shared: .unavailable, refresh: v("production"), receipt: "sandboxReceipt", expected: "production", sharedCount: 1, refreshCount: 1, receiptCount: 0),
+            Scenario(name: "verified_agrees_receipt", interactive: true, shared: .unavailable, refresh: v("sandbox"), receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 1, refreshCount: 1, receiptCount: 0),
             Scenario(name: "shared_unsupported_terminal", interactive: true, shared: v("unknown"), refresh: v("sandbox"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 0, receiptCount: 0),
             Scenario(name: "refresh_unsupported_terminal", interactive: true, shared: .unavailable, refresh: v("unknown"), receipt: "receipt", expected: "unknown", sharedCount: 1, refreshCount: 1, receiptCount: 0),
             Scenario(name: "interactive_simulator", interactive: true, shared: v("sandbox"), refresh: v("sandbox"), receipt: "sandboxReceipt", expected: "unknown", sharedCount: 0, refreshCount: 0, receiptCount: 0, simulator: true),
             Scenario(name: "older_ios_receipt_only", interactive: true, shared: v("production"), refresh: v("production"), receipt: "sandboxReceipt", expected: "sandbox", sharedCount: 0, refreshCount: 0, receiptCount: 1, supported: false)
         ]
+        // Cross-product verifies that verified paths do not invoke receipt(),
+        // even when its evidence disagrees or is absent/unrecognized.
+        for path in ["current", "interactive_shared", "interactive_refresh"] {
+            for receiptName in [nil, "sandboxReceipt", "receipt", "other"] as [String?] {
+                for environment in ["sandbox", "production", "xcode", "unknown", "unsupported"] {
+                    for matches in [true, false] {
+                        let refreshed = path == "interactive_refresh"
+                        let expected = matches && ["sandbox", "production"].contains(environment) ? environment : "unknown"
+                        cases.append(Scenario(name: "authority_" + path + "_" + environment + "_" + String(matches) + "_" + (receiptName ?? "absent"),
+                            interactive: path != "current", shared: refreshed ? .unavailable : v(environment, matches),
+                            refresh: v(environment, matches), receipt: receiptName, expected: expected,
+                            sharedCount: 1, refreshCount: refreshed ? 1 : 0, receiptCount: 0))
+                    }
+                }
+            }
+        }
+        // Fallback is still allowed only when verified evidence is unavailable.
+        for interactive in [false, true] {
+            for receiptName in [nil, "sandboxReceipt", "receipt", "other"] as [String?] {
+                for unverified in [false, true] {
+                    let missing: AppTransactionEvidence = unverified ? .unverified : .unavailable
+                    let expected = receiptName == "sandboxReceipt" ? "sandbox" : receiptName == "receipt" ? "production" : "unknown"
+                    cases.append(Scenario(name: "fallback_" + String(interactive) + "_" + String(unverified) + "_" + (receiptName ?? "absent"),
+                        interactive: interactive, shared: missing, refresh: missing, receipt: receiptName, expected: expected,
+                        sharedCount: 1, refreshCount: interactive ? 1 : 0, receiptCount: 1))
+                }
+            }
+        }
         var rows: [[String: Any]] = []
         for c in cases {
             let probe = Probe(); let receipt = ReceiptProbe(c.receipt)

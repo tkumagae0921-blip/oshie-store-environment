@@ -1,4 +1,4 @@
-# Oshie Store Environment 0.2.1 — local candidate
+# Oshie Store Environment 0.2.2 — local candidate
 
 `OshieStoreEnvironmentReader.current()` is the non-interactive API for startup
 and automatic foreground checks. It never invokes AppTransaction.refresh.
@@ -14,17 +14,19 @@ native overlapping interactive requests are rejected as unknown.
 Both return only production, sandbox, unknown. On physical iOS 16+, shared is
 checked once; only the explicit-user path may refresh once after shared throws
 or is unverified. Verified bundle mismatch/unsupported environment is terminal
-unknown. Receipt filename/existence is secondary evidence; conflict is unknown.
+unknown, without receipt fallback. Verified matching sandbox/production is
+authoritative and returned without reading the receipt. Receipt filename/existence
+is fallback evidence only after unavailable/unverified AppTransaction results.
 Simulator/non-iOS stays unknown. Older iOS retains receipt-only fallback.
 No purchase, restore, AppStore.sync, receipt-refresh request, backend operations,
 transaction payloads or identifiers are exposed. No logging is added.
 
-App integration is NOT implemented in this candidate. Oshie must keep backend
-initialization at cold startup: a successful interactive hint should request a
-user relaunch, not initialize/switch a backend in the running safe shell. A fresh
-process must re-read passive evidence; do not persist or force the refreshed hint.
-Only the existing safe-shell retry button may be wired in a separately approved
-app integration gate. This library cannot authenticate the provenance of a tap.
+The existing approved app startup continuation is unchanged by this plugin.
+Only the safe-shell retry button may call the interactive API. A successful hint
+may finish unresolved startup only when no backend has been assigned and no
+Supabase initialization has started. Assignment and initialization remain at
+most once; an initialized backend must never hot-switch. This library cannot
+authenticate the provenance of a tap. Do not persist or force an environment.
 
 Not published, tagged or pushed. Tests mock StoreKit; native app not built.
 

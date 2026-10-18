@@ -6,7 +6,7 @@ import Foundation
    ("sandboxReceipt",true,nil,false,"sandbox"),("receipt",true,nil,false,"production"),
    ("other",true,nil,false,"unknown"),(nil,false,"sandbox",false,"sandbox"),
    (nil,false,"production",false,"production"),(nil,false,"xcode",false,"unknown"),
-   ("receipt",true,"sandbox",false,"unknown"),("sandboxReceipt",true,"production",false,"unknown"),
+   ("receipt",true,"sandbox",false,"sandbox"),("sandboxReceipt",true,"production",false,"production"),
    ("sandboxReceipt",true,"sandbox",false,"sandbox"),("receipt",true,"production",false,"production"),
    ("receipt",true,"production",true,"unknown"),
    ("receipt",true,"xcode",false,"unknown"),("sandboxReceipt",true,"unsupported",false,"unknown"),

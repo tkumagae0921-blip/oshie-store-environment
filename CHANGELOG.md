@@ -1,4 +1,12 @@
-## 0.2.1 (local candidate; unpublished)
+## 0.2.2 (local candidate; unpublished)
+
+- Make verified, bundle-matching sandbox/production AppTransaction authoritative.
+- Do not read receipt evidence after any verified result; mismatch/unsupported remains unknown.
+- Use receipt fallback only for unavailable/unverified transaction evidence.
+- Preserve passive current(), explicit-only refresh, concurrency fences and public APIs.
+- Do not change app startup continuation or introduce billing authority.
+
+## 0.2.1
 
 - Add explicit-user `refreshFromUserAction()` with shared-first, single refresh fallback.
 - Preserve passive `current()` and its Dart eight-second timeout.
